@@ -468,7 +468,6 @@ print_scanning_token(struct stream_descr *	stream,	/* Stream of events */
     case SIOCGIWFREQ:
       {
 	double		freq;			/* Frequency/channel */
-	int		channel = -1;		/* Converted to channel */
 	freq = iw_freq2float(&(event->u.freq));
 	printf("\t<frequency>%f</frequency>\n", freq);
       }

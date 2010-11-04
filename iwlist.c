@@ -461,149 +461,36 @@ print_scanning_token(struct stream_descr *	stream,	/* Stream of events */
   switch(event->cmd)
     {
     case SIOCGIWAP:
-      printf("          Cell %02d - Address: %s\n", state->ap_num,
-	     iw_saether_ntop(&event->u.ap_addr, buffer));
+      printf("<cell>\n");
+      printf("\t<address>%s</address>\n", iw_saether_ntop(&event->u.ap_addr, buffer));
       state->ap_num++;
-      break;
-    case SIOCGIWNWID:
-      if(event->u.nwid.disabled)
-	printf("                    NWID:off/any\n");
-      else
-	printf("                    NWID:%X\n", event->u.nwid.value);
       break;
     case SIOCGIWFREQ:
       {
 	double		freq;			/* Frequency/channel */
 	int		channel = -1;		/* Converted to channel */
 	freq = iw_freq2float(&(event->u.freq));
-	/* Convert to channel if possible */
-	if(has_range)
-	  channel = iw_freq_to_channel(freq, iw_range);
-	iw_print_freq(buffer, sizeof(buffer),
-		      freq, channel, event->u.freq.flags);
-	printf("                    %s\n", buffer);
+	printf("\t<frequency>%f</frequency>\n", freq);
       }
-      break;
-    case SIOCGIWMODE:
-      /* Note : event->u.mode is unsigned, no need to check <= 0 */
-      if(event->u.mode >= IW_NUM_OPER_MODE)
-	event->u.mode = IW_NUM_OPER_MODE;
-      printf("                    Mode:%s\n",
-	     iw_operation_mode[event->u.mode]);
-      break;
-    case SIOCGIWNAME:
-      printf("                    Protocol:%-1.16s\n", event->u.name);
       break;
     case SIOCGIWESSID:
       {
 	char essid[4*IW_ESSID_MAX_SIZE+1];
 	memset(essid, '\0', sizeof(essid));
 	if((event->u.essid.pointer) && (event->u.essid.length))
-	  iw_essid_escape(essid,
-			  event->u.essid.pointer, event->u.essid.length);
+	  iw_essid_escape(essid, event->u.essid.pointer, event->u.essid.length);
 	if(event->u.essid.flags)
 	  {
-	    /* Does it have an ESSID index ? */
-	    if((event->u.essid.flags & IW_ENCODE_INDEX) > 1)
-	      printf("                    ESSID:\"%s\" [%d]\n", essid,
-		     (event->u.essid.flags & IW_ENCODE_INDEX));
-	    else
-	      printf("                    ESSID:\"%s\"\n", essid);
+	      printf("\t<essid>%s</essid>\n", essid);
 	  }
-	else
-	  printf("                    ESSID:off/any/hidden\n");
-      }
-      break;
-    case SIOCGIWENCODE:
-      {
-	unsigned char	key[IW_ENCODING_TOKEN_MAX];
-	if(event->u.data.pointer)
-	  memcpy(key, event->u.data.pointer, event->u.data.length);
-	else
-	  event->u.data.flags |= IW_ENCODE_NOKEY;
-	printf("                    Encryption key:");
-	if(event->u.data.flags & IW_ENCODE_DISABLED)
-	  printf("off\n");
-	else
-	  {
-	    /* Display the key */
-	    iw_print_key(buffer, sizeof(buffer), key, event->u.data.length,
-			 event->u.data.flags);
-	    printf("%s", buffer);
-
-	    /* Other info... */
-	    if((event->u.data.flags & IW_ENCODE_INDEX) > 1)
-	      printf(" [%d]", event->u.data.flags & IW_ENCODE_INDEX);
-	    if(event->u.data.flags & IW_ENCODE_RESTRICTED)
-	      printf("   Security mode:restricted");
-	    if(event->u.data.flags & IW_ENCODE_OPEN)
-	      printf("   Security mode:open");
-	    printf("\n");
-	  }
-      }
-      break;
-    case SIOCGIWRATE:
-      if(state->val_index == 0)
-	printf("                    Bit Rates:");
-      else
-	if((state->val_index % 5) == 0)
-	  printf("\n                              ");
-	else
-	  printf("; ");
-      iw_print_bitrate(buffer, sizeof(buffer), event->u.bitrate.value);
-      printf("%s", buffer);
-      /* Check for termination */
-      if(stream->value == NULL)
-	{
-	  printf("\n");
-	  state->val_index = 0;
-	}
-      else
-	state->val_index++;
-      break;
-    case SIOCGIWMODUL:
-      {
-	unsigned int	modul = event->u.param.value;
-	int		i;
-	int		n = 0;
-	printf("                    Modulations :");
-	for(i = 0; i < IW_SIZE_MODUL_LIST; i++)
-	  {
-	    if((modul & iw_modul_list[i].mask) == iw_modul_list[i].mask)
-	      {
-		if((n++ % 8) == 7)
-		  printf("\n                        ");
-		else
-		  printf(" ; ");
-		printf("%s", iw_modul_list[i].cmd);
-	      }
-	  }
-	printf("\n");
       }
       break;
     case IWEVQUAL:
       iw_print_stats(buffer, sizeof(buffer),
 		     &event->u.qual, iw_range, has_range);
-      printf("                    %s\n", buffer);
+      printf("%s", buffer);
+      printf("</cell>\n");
       break;
-#ifndef WE_ESSENTIAL
-    case IWEVGENIE:
-      /* Informations Elements are complex, let's do only some of them */
-      iw_print_gen_ie(event->u.data.pointer, event->u.data.length);
-      break;
-#endif	/* WE_ESSENTIAL */
-    case IWEVCUSTOM:
-      {
-	char custom[IW_CUSTOM_MAX+1];
-	if((event->u.data.pointer) && (event->u.data.length))
-	  memcpy(custom, event->u.data.pointer, event->u.data.length);
-	custom[event->u.data.length] = '\0';
-	printf("                    Extra:%s\n", custom);
-      }
-      break;
-    default:
-      printf("                    (Unknown Wireless Token 0x%04X)\n",
-	     event->cmd);
    }	/* switch(event->cmd) */
 }
 

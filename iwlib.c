@@ -1527,8 +1527,7 @@ iw_print_stats(char *		buffer,
       /* Deal with quality : always a relative value */
       if(!(qual->updated & IW_QUAL_QUAL_INVALID))
 	{
-	  len = snprintf(buffer, buflen, "Quality%c%d/%d  ",
-			 qual->updated & IW_QUAL_QUAL_UPDATED ? '=' : ':',
+	  len = snprintf(buffer, buflen, "\t<quality>%d/%d</quality>\n",
 			 qual->qual, range->max_qual.qual);
 	  buffer += len;
 	  buflen -= len;
@@ -1542,9 +1541,7 @@ iw_print_stats(char *		buffer,
 	  if(!(qual->updated & IW_QUAL_LEVEL_INVALID))
 	    {
 	      double	rcpilevel = (qual->level / 2.0) - 110.0;
-	      len = snprintf(buffer, buflen, "Signal level%c%g dBm  ",
-			     qual->updated & IW_QUAL_LEVEL_UPDATED ? '=' : ':',
-			     rcpilevel);
+	      len = snprintf(buffer, buflen, "\t<signal>%g dBm</signal>\n", rcpilevel);
 	      buffer += len;
 	      buflen -= len;
 	    }
@@ -1553,9 +1550,7 @@ iw_print_stats(char *		buffer,
 	  if(!(qual->updated & IW_QUAL_NOISE_INVALID))
 	    {
 	      double	rcpinoise = (qual->noise / 2.0) - 110.0;
-	      len = snprintf(buffer, buflen, "Noise level%c%g dBm",
-			     qual->updated & IW_QUAL_NOISE_UPDATED ? '=' : ':',
-			     rcpinoise);
+	      len = snprintf(buffer, buflen, "\t<noise>%g dBm</noise>\n", rcpinoise);
 	    }
 	}
       else
@@ -1571,9 +1566,7 @@ iw_print_stats(char *		buffer,
 		  /* Implement a range for dBm [-192; 63] */
 		  if(qual->level >= 64)
 		    dblevel -= 0x100;
-		  len = snprintf(buffer, buflen, "Signal level%c%d dBm  ",
-				 qual->updated & IW_QUAL_LEVEL_UPDATED ? '=' : ':',
-				 dblevel);
+		  len = snprintf(buffer, buflen, "\t<signal>%d dBm</signal>\n", dblevel);
 		  buffer += len;
 		  buflen -= len;
 		}
@@ -1585,9 +1578,7 @@ iw_print_stats(char *		buffer,
 		  /* Implement a range for dBm [-192; 63] */
 		  if(qual->noise >= 64)
 		    dbnoise -= 0x100;
-		  len = snprintf(buffer, buflen, "Noise level%c%d dBm",
-				 qual->updated & IW_QUAL_NOISE_UPDATED ? '=' : ':',
-				 dbnoise);
+		  len = snprintf(buffer, buflen, "\t<noise>%d dBm</noise>\n", dbnoise);
 		}
 	    }
 	  else
@@ -1595,9 +1586,7 @@ iw_print_stats(char *		buffer,
 	      /* Deal with signal level as relative value (0 -> max) */
 	      if(!(qual->updated & IW_QUAL_LEVEL_INVALID))
 		{
-		  len = snprintf(buffer, buflen, "Signal level%c%d/%d  ",
-				 qual->updated & IW_QUAL_LEVEL_UPDATED ? '=' : ':',
-				 qual->level, range->max_qual.level);
+		  len = snprintf(buffer, buflen, "\t<signal>%d/%d</signal>\n", qual->level, range->max_qual.level);
 		  buffer += len;
 		  buflen -= len;
 		}
@@ -1605,9 +1594,7 @@ iw_print_stats(char *		buffer,
 	      /* Deal with noise level as relative value (0 -> max) */
 	      if(!(qual->updated & IW_QUAL_NOISE_INVALID))
 		{
-		  len = snprintf(buffer, buflen, "Noise level%c%d/%d",
-				 qual->updated & IW_QUAL_NOISE_UPDATED ? '=' : ':',
-				 qual->noise, range->max_qual.noise);
+		  len = snprintf(buffer, buflen, "\t<noise>%d/%d</noise>\n", qual->noise, range->max_qual.noise);
 		}
 	    }
 	}
@@ -1616,7 +1603,7 @@ iw_print_stats(char *		buffer,
     {
       /* We can't read the range, so we don't know... */
       snprintf(buffer, buflen,
-	       "Quality:%d  Signal level:%d  Noise level:%d",
+	       "\t<quality>%d</quality>\n\t<signal>%d</signal>\n\t<noise>%d</noise>\n",
 	       qual->qual, qual->level, qual->noise);
     }
 }

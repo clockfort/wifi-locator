@@ -752,7 +752,7 @@ print_scanning_info(int		skfd,
 	printf(":%02X", buffer[i]);
       printf("]\n");
 #endif
-      printf("%-8.16s  Scan completed :\n", ifname);
+      printf("<?xml version='1.0'?>\n<cells>\n");
       iw_init_event_stream(&stream, (char *) buffer, wrq.u.data.length);
       do
 	{
@@ -764,7 +764,7 @@ print_scanning_info(int		skfd,
 				 &range, has_range);
 	}
       while(ret > 0);
-      printf("\n");
+      printf("\n</cells>\n");
     }
   else
     printf("%-8.16s  No scan results\n\n", ifname);

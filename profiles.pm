@@ -7,7 +7,6 @@ use warnings;
 my $debug=1;
 
 my @profiles;
-
 my $xml = new XML::Simple;
 
 sub import_profile_data{
@@ -26,10 +25,16 @@ sub import_profile_data{
 		        	my %current_cell = xml_cell_to_hash_cell($cell);
 				push(@cells,\%current_cell);
                 	}
-
+			my %profile = ();
+			$profile{'x'} = $x;
+			$profile{'y'} = $y;
+			$profile{'cells'} = \@cells;
+			push(@profiles,\%profile);
 			if ($debug) {print "... done.\n";}	
 		}
 	}
+	return \@profiles;
+
 }
 
 #current xml keys: 'frequency', 'signal', 'address', 'quality', 'essid', 'noise'

@@ -8,9 +8,8 @@ use profiles;
 
 #Could take a while.
 print "Starting profile import...\n";
-import_profile_data("rt2860");
+my @profiles = import_profile_data("rt2860");
 print "Done with profile import.\n";
-
 my $xml = new XML::Simple;
 
 open(my $XML_INPUT, "./iwlist ra0 scan |");
@@ -24,7 +23,6 @@ foreach my $cell (@{$data->{cell}}){
 	my %current_cell = xml_cell_to_hash_cell($cell);
 	push(@cells,\%current_cell);
 }
-
 
 #Testing sorting
 my @sorted_cells = sort { ${$a}{'signal'} <=> ${$b}{'signal'} } @cells;

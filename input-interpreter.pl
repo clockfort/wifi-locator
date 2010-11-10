@@ -4,7 +4,12 @@ use XML::Simple;
 use Data::Dumper;
 use strict;
 use warnings;
+use profiles;
 
+#Could take a while.
+print "Starting profile import...\n";
+import_profile_data("rt2860");
+print "Done with profile import.\n";
 
 my $xml = new XML::Simple;
 
@@ -27,17 +32,3 @@ foreach my $cell (@sorted_cells){
 	print ${$cell}{'signal'}, "\n";
 }
 
-
-#current xml keys: 'frequency', 'signal', 'address', 'quality', 'essid', 'noise'
-sub xml_cell_to_hash_cell {	
-	my $cell = shift;
-        my %current_cell = ();
-        $current_cell{'frequency'} = $cell->{frequency};
-        $current_cell{'signal'} = $cell->{signal};
-        $current_cell{'signal'} =~ s/ dBm//;
-        $current_cell{'address'} = $cell->{address};
-        $current_cell{'quality'} = $cell->{quality};
-        $current_cell{'essid'} = $cell->{essid};
-        $current_cell{'noise'} = $cell->{noise};
-	return %current_cell;
-}

@@ -43,11 +43,12 @@ sub xml_cell_to_hash_cell {
         my %current_cell = ();
         $current_cell{'frequency'} = $cell->{frequency};
         $current_cell{'signal'} = $cell->{signal};
-        $current_cell{'signal'} =~ s/ dBm//;
+        $current_cell{'signal'} =~ s/ dBm//; #for easy maths
         $current_cell{'address'} = $cell->{address};
         $current_cell{'quality'} = $cell->{quality};
         $current_cell{'essid'} = $cell->{essid};
         $current_cell{'noise'} = $cell->{noise};
+	$current_cell{'noise'} =~ s/ dBm//;
         return %current_cell;
 }
 

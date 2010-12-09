@@ -24,6 +24,8 @@ foreach my $cell (@{$data->{cell}}){
 	push(@cells,\%current_cell);
 }
 
+my @deltas;
+
 my ($best_delta,$best_x,$best_y) = (-99999,0,0);
 #Generate change value.
 #Somewhat verbose in order to prevent the array of pointers to hashes with pointers 
@@ -44,14 +46,25 @@ foreach my $profile_ptr (@profiles){
 			}
 		}
 	}
-	my ($x,$y) = ($profile{'x'},$profile{'y'});
-	print "Delta sum=$delta_sum \@ $x,$y\n";
+
+	my %entry = ();
+	$entry{'x'}=$profile{'x'};
+	$entry{'y'}=$profile{'y'};
+	$entry{'delta'}=$delta_sum;
+	print "My delta sum is $delta_sum\n";
 	$profile{'delta_sum'}=$delta_sum;
+	push(@deltas,\%entry);
+
 	if($profile{'delta_sum'}>$best_delta && $profile{'delta_sum'}!=0){
 		$best_x = $profile{'x'};
 		$best_y = $profile{'y'};
 		$best_delta = $profile{'delta_sum'};
 	}
+}
+
+#my @sorted_deltas = sort { ${$a}{'delta_sum'} <=> ${$b}{'delta_sum'} } @deltas;
+foreach my $d (@deltas){
+#	print ${$d}{'delta_sum'},"\n";
 }
 
 print "Best delta value: $best_delta\nClosest x: $best_x\nClosest y: $best_y\n";
